@@ -35,8 +35,8 @@ function mapAsyncRouter(map, routes) {
     const tmp = {
       id: route.id,
       asyncRouter: 1,
-      path: route.modulePath,
-      pathname: route.modulePathName,
+      path: route.moduleUrl,
+      pathname: route.moduleName,
       component: map[route.moduleActionName],
       hidden: route.moduleHide === 1,
       meta: { title: route.moduleTitle, icon: route.moduleIcon }

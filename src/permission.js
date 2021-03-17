@@ -33,87 +33,8 @@ router.beforeEach((to, from, next) => {
         store
           .dispatch('GetUserInfo')
           .then(res => {
-            // 拉取user_info
-            //const access = res.data.access;
-            localStorage.setItem("ROLEMENU", JSON.stringify(res.data.access)); 
-            const access = [
-              {
-                "id": 1,
-                "roleId": 1,
-                "systemId": 1,
-                "moduleActionName": "/views/layout/Layout",
-                "moduleTitle": "机构管理",
-                "modulePathName": "organizationManage",
-                "modulePath": "organizationManage",
-                "moduleHide": 0,
-                "moduleIcon": "",
-                "noCache": false,
-                "children": [
-                  {
-                    "id": 11,
-                    "roleId": 1,
-                    "systemId": 1,
-                    "moduleActionName": "/views/organizationManage/orgList",
-                    "moduleTitle": "机构管理",
-                    "modulePathName": "orgList",
-                    "modulePath": "/organizationManage/orgList",
-                    "moduleHide": 0,
-                    "moduleIcon": "",
-                    "noCache": false
-                  },
-                  {
-                    "id": 12,
-                    "roleId": 1,
-                    "systemId": 1,
-                    "moduleActionName": "/views/organizationManage/orgTypeList",
-                    "moduleTitle": "机构类型",
-                    "modulePathName": "orgTypeList",
-                    "modulePath": "/organizationManage/orgTypeList",
-                    "moduleHide": 0,
-                    "moduleIcon": "",
-                    "noCache": false
-                  }
-                ]
-              },
-              {
-                "id": 2,
-                "roleId": 1,
-                "systemId": 1,
-                "moduleActionName": "/views/layout/Layout",
-                "moduleTitle": "账号管理",
-                "modulePath": "userManage",
-                "modulePathName": "userManage",
-                "moduleHide": 0,
-                "moduleIcon": "",
-                "noCache": false,
-                "children": [
-                  {
-                    "id": 21,
-                    "roleId": 1,
-                    "systemId": 1,
-                    "moduleActionName": "/views/userManage/index",
-                    "moduleTitle": "账号设置",
-                    "modulePathName": "index",
-                    "modulePath": "/userManage/index",
-                    "moduleHide": 0,
-                    "moduleIcon": "",
-                    "noCache": false
-                  },
-                  {
-                    "id": 22,
-                    "roleId": 1,
-                    "systemId": 1,
-                    "moduleActionName": "/views/userManage/roleList",
-                    "moduleTitle": "角色管理",
-                    "modulePathName": "roleList",
-                    "modulePath": "/userManage/roleList",
-                    "moduleHide": 0,
-                    "moduleIcon": "",
-                    "noCache": false
-                  }
-                ]
-              }
-            ]
+            const access = res.data.access;
+            localStorage.setItem("ROLEMENU", JSON.stringify(res.data.access));
             const roles = res.data.roles;
             store.dispatch('GenerateRoutes', { access, roles }).then(() => {
               // 根据roles权限生成可访问的路由表

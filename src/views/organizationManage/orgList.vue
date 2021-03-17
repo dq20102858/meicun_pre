@@ -16,9 +16,12 @@
             @change="searchRoleEvent($event)"
             placeholder="全部类型"
           >
-            <el-option label="全部类型" value="0"></el-option>
-            <el-option label="管理员" value="1"></el-option>
-            <el-option label="维护人员" value="2"></el-option>
+            <el-option
+              v-for="item in orgTypeList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="el-form-item" label="管理员名称：">
@@ -29,14 +32,14 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="el-form-item">
-          <el-button type="primary" @click="addShowDialog">查询</el-button>
-          <el-button @click="addShowDialog">重置</el-button>
+          <el-button type="primary" @click="searchOrgEvent">查询</el-button>
+          <el-button @click="searchOrgResetEvent">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="app-page-container">
       <div class="app-page-adds">
-        <el-button type="primary" @click="addShowDialog">新增</el-button>
+        <el-button type="primary" @click="addOrgDialog">新增</el-button>
       </div>
       <div class="app-table app-table-nowrap">
         <el-table :data="dataList">
@@ -62,31 +65,31 @@
             prop="create_time"
             label="添加时间"
           ></el-table-column>
-          <el-table-column fixed="right" label="操作" width="270">
+          <el-table-column fixed="right" label="操作" width="270" align="center">
             <template slot-scope="scope">
               <div class="app-operation">
                 <el-button
                   class="btn-edit"
                   size="mini"
-                  @click="userEditEvent(scope.row.id)"
+                  @click="editOrgDialog(scope.row.id)"
                   >进入系统</el-button
                 >
                 <el-button
                   class="btn-edit"
                   size="mini"
-                  @click="editShowDialog(scope.row.id)"
+                  @click="editOrgDialog(scope.row.id)"
                   >编辑</el-button
                 >
                 <el-button
                   class="btn-edit"
                   size="mini"
-                  @click="userEditEvent(scope.row.id)"
+                  @click="editOrgDialog(scope.row.id)"
                   >资料配置</el-button
                 >
                 <el-button
                   class="btn-del"
                   size="mini"
-                  @click="userDeleteEvent(scope.row.id)"
+                  @click="delOrgDialog(scope.row.id)"
                   >删除</el-button
                 >
               </div>
@@ -134,13 +137,19 @@
             </el-select>
           </el-form-item>
           <el-form-item label="所属区域" prop="area">
-            <el-cascader   v-model="provinces" :options="options" style="width:280px">
+            <el-cascader
+              ref="provinces"
+              v-model="provinces"
+              :options="options"
+              style="width: 280px"
+            >
               <template slot-scope="{ node, data }">
                 <span>{{ data.label }}</span>
                 <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
               </template>
             </el-cascader>
           </el-form-item>
+          <el-button @click="getArea">测试</el-button>
           <el-form-item label="管理员名称" prop="admin_name">
             <el-input
               v-model="formData.admin_name"
@@ -162,9 +171,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="diaLogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="userAddEventDialog"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="saveOrgEvent">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -256,280 +263,90 @@ export default {
       orgTypeList: [],
       options: [
         {
-          value: "zhinan",
-          label: "指南",
+          value: "1",
+          label: "北京",
           children: [
             {
-              value: "shejiyuanze",
-              label: "设计原则",
+              value: "2",
+              label: "北京",
               children: [
                 {
-                  value: "yizhi",
-                  label: "一致",
+                  value: "3",
+                  label: "昌平区",
                 },
                 {
-                  value: "fankui",
-                  label: "反馈",
+                  value: "4",
+                  label: "海淀区",
                 },
                 {
-                  value: "xiaolv",
-                  label: "效率",
-                },
-                {
-                  value: "kekong",
-                  label: "可控",
-                },
-              ],
-            },
-            {
-              value: "daohang",
-              label: "导航",
-              children: [
-                {
-                  value: "cexiangdaohang",
-                  label: "侧向导航",
-                },
-                {
-                  value: "dingbudaohang",
-                  label: "顶部导航",
+                  value: "5",
+                  label: "丰台区",
                 },
               ],
             },
           ],
         },
         {
-          value: "zujian",
-          label: "组件",
+          value: "10",
+          label: "江苏省",
           children: [
             {
-              value: "basic",
-              label: "Basic",
+              value: "11",
+              label: "无锡",
               children: [
                 {
-                  value: "layout",
-                  label: "Layout 布局",
+                  value: "12",
+                  label: "梁溪区",
                 },
                 {
-                  value: "color",
-                  label: "Color 色彩",
+                  value: "13",
+                  label: "滨湖区",
                 },
                 {
-                  value: "typography",
-                  label: "Typography 字体",
+                  value: "14",
+                  label: "锡山区",
                 },
                 {
-                  value: "icon",
-                  label: "Icon 图标",
-                },
-                {
-                  value: "button",
-                  label: "Button 按钮",
+                  value: "15",
+                  label: "惠山区",
                 },
               ],
             },
             {
-              value: "form",
-              label: "Form",
+              value: "20",
+              label: "南京市",
               children: [
                 {
-                  value: "radio",
-                  label: "Radio 单选框",
+                  value: "21",
+                  label: "玄武区",
                 },
                 {
-                  value: "checkbox",
-                  label: "Checkbox 多选框",
+                  value: "22",
+                  label: "建邺区",
                 },
                 {
-                  value: "input",
-                  label: "Input 输入框",
-                },
-                {
-                  value: "input-number",
-                  label: "InputNumber 计数器",
-                },
-                {
-                  value: "select",
-                  label: "Select 选择器",
-                },
-                {
-                  value: "cascader",
-                  label: "Cascader 级联选择器",
-                },
-                {
-                  value: "switch",
-                  label: "Switch 开关",
-                },
-                {
-                  value: "slider",
-                  label: "Slider 滑块",
-                },
-                {
-                  value: "time-picker",
-                  label: "TimePicker 时间选择器",
-                },
-                {
-                  value: "date-picker",
-                  label: "DatePicker 日期选择器",
-                },
-                {
-                  value: "datetime-picker",
-                  label: "DateTimePicker 日期时间选择器",
-                },
-                {
-                  value: "upload",
-                  label: "Upload 上传",
-                },
-                {
-                  value: "rate",
-                  label: "Rate 评分",
-                },
-                {
-                  value: "form",
-                  label: "Form 表单",
+                  value: "23",
+                  label: "秦淮区",
                 },
               ],
-            },
-            {
-              value: "data",
-              label: "Data",
-              children: [
-                {
-                  value: "table",
-                  label: "Table 表格",
-                },
-                {
-                  value: "tag",
-                  label: "Tag 标签",
-                },
-                {
-                  value: "progress",
-                  label: "Progress 进度条",
-                },
-                {
-                  value: "tree",
-                  label: "Tree 树形控件",
-                },
-                {
-                  value: "pagination",
-                  label: "Pagination 分页",
-                },
-                {
-                  value: "badge",
-                  label: "Badge 标记",
-                },
-              ],
-            },
-            {
-              value: "notice",
-              label: "Notice",
-              children: [
-                {
-                  value: "alert",
-                  label: "Alert 警告",
-                },
-                {
-                  value: "loading",
-                  label: "Loading 加载",
-                },
-                {
-                  value: "message",
-                  label: "Message 消息提示",
-                },
-                {
-                  value: "message-box",
-                  label: "MessageBox 弹框",
-                },
-                {
-                  value: "notification",
-                  label: "Notification 通知",
-                },
-              ],
-            },
-            {
-              value: "navigation",
-              label: "Navigation",
-              children: [
-                {
-                  value: "menu",
-                  label: "NavMenu 导航菜单",
-                },
-                {
-                  value: "tabs",
-                  label: "Tabs 标签页",
-                },
-                {
-                  value: "breadcrumb",
-                  label: "Breadcrumb 面包屑",
-                },
-                {
-                  value: "dropdown",
-                  label: "Dropdown 下拉菜单",
-                },
-                {
-                  value: "steps",
-                  label: "Steps 步骤条",
-                },
-              ],
-            },
-            {
-              value: "others",
-              label: "Others",
-              children: [
-                {
-                  value: "dialog",
-                  label: "Dialog 对话框",
-                },
-                {
-                  value: "tooltip",
-                  label: "Tooltip 文字提示",
-                },
-                {
-                  value: "popover",
-                  label: "Popover 弹出框",
-                },
-                {
-                  value: "card",
-                  label: "Card 卡片",
-                },
-                {
-                  value: "carousel",
-                  label: "Carousel 走马灯",
-                },
-                {
-                  value: "collapse",
-                  label: "Collapse 折叠面板",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          value: "ziyuan",
-          label: "资源",
-          children: [
-            {
-              value: "axure",
-              label: "Axure Components",
-            },
-            {
-              value: "sketch",
-              label: "Sketch Templates",
-            },
-            {
-              value: "jiaohu",
-              label: "组件交互文档",
             },
           ],
         },
       ],
-      provinces :['zujian','basic','layout']
+      provinces: ["10", "11", "13"],
       //
     };
   },
   created() {
+    this.getOrgTypeList();
     this.getDataList();
   },
   methods: {
+    getArea() {
+      alert(this.provinces);
+      var labels = this.$refs["provinces"].getCheckedNodes()[0].pathLabels;
+      alert(labels.join("  "));
+    },
     getOrgTypeList() {
       this.request({
         url: "/org/getOrgTypeLists",
@@ -567,16 +384,70 @@ export default {
       this.page_current = value;
       this.getDataList();
     },
-    searchRoleEvent(e) {
+    searchOrgEvent(e) {
       this.page_current = 1;
       this.getDataList();
     },
-    addShowDialog() {
+    searchOrgResetEvent(e) {
+      this.page_current = 1;
+      this.getDataList();
+    },
+    addOrgDialog() {
       this.diaLogFormVisible = true;
-      this.getOrgTypeList();
       this.formData = {};
     },
-    userAddEventDialog() {
+
+    editOrgDialog(id) {
+      this.diaLogFormVisible = true;
+      this.diaLogTitle = "修改人员信息";
+      this.$nextTick(() => {
+        this.$refs["formRulesRef"].clearValidate();
+      });
+      this.request({
+        url: "/user/getUserDetail",
+        method: "get",
+        params: { id: id },
+      }).then((response) => {
+        let data = response.data;
+        if (data.status == 1) {
+          this.formData = data.data;
+          //console.log(this.userData.menus);
+          this.passwordOrg = data.data.password;
+        }
+      });
+    },
+    delOrgDialog(id) {
+      this.$confirm("您确定要删除？删除后不能恢复！", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        customClass: "el-message-box-new",
+      })
+        .then(() => {
+          this.request({
+            url: "/user/delUser",
+            method: "post",
+            data: { id: id },
+          }).then((res) => {
+            let data = res.data;
+            if (data.status == 1) {
+              if (this.dataList.length == 1) {
+                this.page_current =
+                  this.page_current < 1 ? 1 : this.page_current - 1;
+                this.getDataList();
+              } else {
+                this.getDataList();
+              }
+              this.$message({
+                type: "success",
+                message: "删除成功！",
+              });
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    saveOrgEvent() {
       const that = this;
       this.$refs["formRulesRef"].validate((valid) => {
         if (valid) {
@@ -612,56 +483,6 @@ export default {
           return false;
         }
       });
-    },
-    userEditEvent(id) {
-      this.diaLogFormVisible = true;
-      this.diaLogTitle = "修改人员信息";
-      this.$nextTick(() => {
-        this.$refs["formRulesRef"].clearValidate();
-      });
-      this.request({
-        url: "/user/getUserDetail",
-        method: "get",
-        params: { id: id },
-      }).then((response) => {
-        let data = response.data;
-        if (data.status == 1) {
-          this.formData = data.data;
-          //console.log(this.userData.menus);
-          this.passwordOrg = data.data.password;
-        }
-      });
-    },
-    userDeleteEvent(id) {
-      this.$confirm("您确定要删除？删除后不能恢复！", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        customClass: "el-message-box-new",
-      })
-        .then(() => {
-          this.request({
-            url: "/user/delUser",
-            method: "post",
-            data: { id: id },
-          }).then((res) => {
-            let data = res.data;
-            if (data.status == 1) {
-              if (this.dataList.length == 1) {
-                this.page_current =
-                  this.page_current < 1 ? 1 : this.page_current - 1;
-                this.getDataList();
-              } else {
-                this.getDataList();
-              }
-              this.$message({
-                type: "success",
-                message: "删除成功！",
-              });
-            }
-          });
-        })
-        .catch(() => {});
     },
     //
   },

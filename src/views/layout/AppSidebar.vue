@@ -16,7 +16,7 @@
       <template v-for="item in permission_routers">
         <el-submenu v-if="item.id > 0" :key="item.title" :index="item.pathname">
           <template slot="title">
-            <img class="img" :src="require('@/assets/image/m_monitor.png')" />
+            <img class="img" :src="require('@/assets/image/'+item.meta.icon)" />
             <em class="span">{{ item.meta.title }}</em>
           </template>
           <el-menu-item-group>
@@ -31,31 +31,6 @@
           </el-menu-item-group>
         </el-submenu>
       </template>
-      <!-- <template v-for="item in moduleMenude">
-        <el-submenu
-          v-if="item.isChildren == 1"
-          :key="item.id"
-          :index="item.moduleAction"
-        >
-          <template slot="title">
-            <img
-              class="img"
-              :src="require('@/assets/image/icon-' + item.moduleIcon + '.png')"
-            />
-            <em class="span">{{ item.moduleName }}</em>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item
-              class="app-menu-group"
-              v-for="items in item.children"
-              :key="items.id"
-              :index="items.moduleAction"
-              :route="items.moduleAction"
-              >{{ items.moduleName }}</el-menu-item
-            >
-          </el-menu-item-group>
-        </el-submenu> 
-      </template>-->
     </el-menu>
   </el-scrollbar>
 </template>

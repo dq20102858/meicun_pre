@@ -125,7 +125,7 @@ export default {
       }).then((res) => {
         if (res.data.status == 1) {
           this.dataList = res.data.data.data;
-          this.page_current = res.data.current_page;
+          this.page_current =parseInt(res.data.data.current_page);
           this.page_total = res.data.data.total;
           this.page_size = res.data.data.per_page;
         }
