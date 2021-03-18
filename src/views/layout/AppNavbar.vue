@@ -22,7 +22,6 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  name: "Navbar",
   data() {
     return {};
   },

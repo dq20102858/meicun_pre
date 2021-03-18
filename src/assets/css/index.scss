@@ -72,7 +72,7 @@ ul,li{list-style-type: none}
 
 .app-operation{white-space: nowrap; text-align: center;}
 .app-operation .el-button{margin-left: 0!important;margin-right: 5px;padding: 6px 8px;}
-.app-operation .el-button:hover{background: #fff;}
+.app-operation .el-button:hover{background: #eee;}
 .app-operation .el-button:active{background: #fff;}
 .app-operation .el-button:focus{background: #fff;}
 .app-operation .el-button[disabled]{color: #999; border: 0;background:none ;}
@@ -80,6 +80,8 @@ ul,li{list-style-type: none}
 .app-operation .btn-edit{color: #FEA628; border: 0;}
 .app-operation .btn-del{color: #FF5757;border: 0;}
 .app-operation .btn-green{border: 1px #26a80f solid;color: #26a80f}
+.app-operation .btn-set{border:0;color:#3C5CDC}
+.app-operation .btn-into{border:0;color:#47CCDA}
 /*el-form */
 .el-form-custom .el-form-item{margin-bottom: 25px;}
 .el-form-custom .el-form-item__label{color: #778DA2;}

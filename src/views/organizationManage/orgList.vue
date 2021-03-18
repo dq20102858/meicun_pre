@@ -5,17 +5,14 @@
       <el-form :inline="true">
         <el-form-item class="el-form-item" label="机构名称：">
           <el-input
-            v-model="searchFormData.searchName"
+            v-model="searchFormData.name"
             class="input-with-select"
             placeholder="请输入机构名称"
+            maxlength="20"
           ></el-input>
         </el-form-item>
         <el-form-item class="el-form-item" label="机构类型：">
-          <el-select
-            v-model="searchFormData.searchType"
-            @change="searchRoleEvent($event)"
-            placeholder="全部类型"
-          >
+          <el-select v-model="searchFormData.typeId" placeholder="全部类型">
             <el-option
               v-for="item in orgTypeList"
               :key="item.id"
@@ -26,9 +23,10 @@
         </el-form-item>
         <el-form-item class="el-form-item" label="管理员名称：">
           <el-input
-            v-model="searchFormData.searchAdminName"
+            v-model="searchFormData.adminName"
             class="input-with-select"
             placeholder="请输入管理员名称"
+            maxlength="20"
           ></el-input>
         </el-form-item>
         <el-form-item class="el-form-item">
@@ -48,28 +46,34 @@
               scope.$index + (page_current - 1) * page_size + 1
             }}</template>
           </el-table-column>
-          <el-table-column prop="username" label="机构名称"></el-table-column>
-          <el-table-column label="区域"
-            ><template slot-scope="scope">
-              <span>江苏省 南京市江苏省 南京市江苏省 南京市</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="role" label="机构类型"></el-table-column>
-          <el-table-column prop="role" label="管理员姓名"></el-table-column>
-          <el-table-column prop="role" label="联系电话"></el-table-column>
-          <el-table-column prop="role" label="管理员账号"></el-table-column>
-          <el-table-column prop="phone" label="管理员密码"></el-table-column>
-          <el-table-column prop="role" label="创建人"></el-table-column>
-          <el-table-column prop="role" label="创建日期"></el-table-column>
+          <el-table-column prop="name" label="机构名称"></el-table-column>
+          <el-table-column prop="area" label="区域"></el-table-column>
+          <el-table-column prop="org_type" label="机构类型"></el-table-column>
+          <el-table-column
+            prop="admin_name"
+            label="管理员姓名"
+          ></el-table-column>
+          <el-table-column prop="phone" label="联系电话"></el-table-column>
+          <el-table-column
+            prop="admin_username"
+            label="管理员账号"
+          ></el-table-column>
+          <el-table-column prop="password" label="管理员密码"></el-table-column>
+          <el-table-column prop="create_user" label="创建人"></el-table-column>
           <el-table-column
             prop="create_time"
-            label="添加时间"
+            label="创建日期"
           ></el-table-column>
-          <el-table-column fixed="right" label="操作" width="270" align="center">
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="270"
+            align="center"
+          >
             <template slot-scope="scope">
               <div class="app-operation">
                 <el-button
-                  class="btn-edit"
+                  class="btn-into"
                   size="mini"
                   @click="editOrgDialog(scope.row.id)"
                   >进入系统</el-button
@@ -81,16 +85,16 @@
                   >编辑</el-button
                 >
                 <el-button
-                  class="btn-edit"
-                  size="mini"
-                  @click="editOrgDialog(scope.row.id)"
-                  >资料配置</el-button
-                >
-                <el-button
                   class="btn-del"
                   size="mini"
                   @click="delOrgDialog(scope.row.id)"
                   >删除</el-button
+                >
+                <el-button
+                  class="btn-set"
+                  size="mini"
+                  @click="materialDialog(scope.row.id)"
+                  >资料配置</el-button
                 >
               </div>
             </template>
@@ -124,10 +128,17 @@
           label-width="110px"
         >
           <el-form-item label="机构名称" prop="name">
-            <el-input v-model="formData.name" autocomplete="off"></el-input>
+            <el-input
+              v-model.trim="formData.name"
+              autocomplete="off"
+            ></el-input>
           </el-form-item>
           <el-form-item label="机构类型" prop="type_id">
-            <el-select v-model="formData.type_id" placeholder="请选择职位">
+            <el-select
+              v-model="formData.type_id"
+              placeholder="请选择类型"
+              style="width: 100%"
+            >
               <el-option
                 v-for="item in orgTypeList"
                 :key="item.id"
@@ -136,12 +147,14 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="所属区域" prop="area">
+          <el-form-item label="所属区域" prop="area_id">
             <el-cascader
-              ref="provinces"
-              v-model="provinces"
+              placeholder="请选择区域"
+              ref="areas"
+              v-model="formData.area_id"
               :options="options"
-              style="width: 280px"
+              filterable
+              style="width: 100%"
             >
               <template slot-scope="{ node, data }">
                 <span>{{ data.label }}</span>
@@ -149,7 +162,6 @@
               </template>
             </el-cascader>
           </el-form-item>
-          <el-button @click="getArea">测试</el-button>
           <el-form-item label="管理员名称" prop="admin_name">
             <el-input
               v-model="formData.admin_name"
@@ -163,6 +175,7 @@
             <el-input
               v-model="formData.admin_username"
               autocomplete="off"
+              placeholder="默认输入管理员名称的全拼"
             ></el-input>
           </el-form-item>
           <el-form-item label="管理员密码" prop="password">
@@ -185,61 +198,67 @@ export default {
       diaLogFormVisible: false,
       diaLogTitle: "新增机构",
       uploadAction: this.hostURL + "/upload/uploadFile",
-      formData: {},
+      formData: {
+        area_id: "",
+      },
       passwordOrg: "",
       formRules: {
         name: [
           {
             required: true,
-            message: "请输入长度1-30字符的汉字、字母、数字或下划线组合",
+            message: "请输入机构名称",
             trigger: "blur",
           },
-          {
-            pattern: /^[0-9a/^[0-9a-zA-Z\u4e00-\u9fa5\_]{1,30}$/,
-            message: "请输入长度1-30字符的汉字、字母、数字或下划线组合",
-            trigger: "blur",
-          },
+          { min: 1, max: 30, message: '长度1-30个字符', trigger: 'blur' }
         ],
         type_id: [
           {
             required: true,
-            message: "请选择职位",
+            message: "请选择机构类型",
             trigger: "change",
+          },
+        ],
+        area_id: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择所属区域",
+            trigger: ["blur", "change"],
           },
         ],
         admin_name: [
           {
             required: true,
-            message: "请输入长度1-10个字符的字母、数字、下划线组合",
+            message: "请输入管理员姓名",
             trigger: "blur",
           },
           {
-            pattern: /^[0-9a/^[0-9a-zA-Z\u4e00-\u9fa5\_]{1,10}$/,
-            message: "请输入长度1-10个字符的汉字、字母、数字、下划线组合",
+            pattern: /[0-9a-zA-Z\u4e00-\u9fa5]{1,10}$/,
+            message: "请输入长度1-10个字符的的汉字、字母、数字",
             trigger: "blur",
           },
         ],
         admin_username: [
           {
             required: true,
-            message: "请输入长度1-10个字符的字母、数字、下划线组合",
+            message: "请输入管理员账号",
             trigger: "blur",
           },
           {
-            pattern: /^[0-9a/^[0-9a-zA-Z\u4e00-\u9fa5\_]{1,10}$/,
-            message: "请输入长度1-10个字符的汉字、字母、数字、下划线组合",
+            pattern: /[a-zA-Z]{1,10}$/,
+            message: "请输入长度1-20个字符字母全拼",
             trigger: "blur",
           },
         ],
         password: [
           {
             required: true,
-            message: "请输入长度1-10个字符的字母、数字、下划线组合",
+            message: "请输入管理员密码",
             trigger: "blur",
           },
           {
-            pattern: /^[0-9a/^[0-9a-zA-Z\_]{1,10}$/,
-            message: "请输入长度1-10个字符的字母、数字、下划线组合",
+            pattern: /[0-9a-zA-Z]{1,20}$/,
+            message: "请输入长度1-20个字符的字母、数字",
             trigger: "blur",
           },
         ],
@@ -333,7 +352,6 @@ export default {
           ],
         },
       ],
-      provinces: ["10", "11", "13"],
       //
     };
   },
@@ -342,11 +360,6 @@ export default {
     this.getDataList();
   },
   methods: {
-    getArea() {
-      alert(this.provinces);
-      var labels = this.$refs["provinces"].getCheckedNodes()[0].pathLabels;
-      alert(labels.join("  "));
-    },
     getOrgTypeList() {
       this.request({
         url: "/org/getOrgTypeLists",
@@ -359,9 +372,9 @@ export default {
     },
     getDataList() {
       let page = this.page_current;
-      let name = this.searchKeyword;
-      let type_id = this.searchRole;
-      let admin_name = this.searchRole;
+      let name = this.searchFormData.name;
+      let type_id = this.searchFormData.typeId;
+      let admin_name = this.searchFormData.adminName;
       this.request({
         url: "/org/getOrgPages",
         method: "get",
@@ -374,7 +387,7 @@ export default {
       }).then((res) => {
         if (res.data.status == 1) {
           this.dataList = res.data.data.data;
-          this.page_current = res.data.data.current_page;
+          this.page_current = parseInt(res.data.data.current_page);
           this.page_total = res.data.data.total;
           this.page_size = res.data.data.per_page;
         }
@@ -384,35 +397,42 @@ export default {
       this.page_current = value;
       this.getDataList();
     },
-    searchOrgEvent(e) {
+    searchOrgEvent() {
       this.page_current = 1;
       this.getDataList();
     },
-    searchOrgResetEvent(e) {
+    searchOrgResetEvent() {
+      this.searchFormData = {};
       this.page_current = 1;
       this.getDataList();
     },
     addOrgDialog() {
+      this.diaLogTitle = "新增机构";
       this.diaLogFormVisible = true;
+      this.$set(this.formData, "area_id", "");
       this.formData = {};
     },
-
+    materialDialog(id) {
+      this.$router.push({
+        path: "/organizationManage/orgMaterial",
+        query: { orgid: id },
+      });
+     
+    },
     editOrgDialog(id) {
       this.diaLogFormVisible = true;
-      this.diaLogTitle = "修改人员信息";
+      this.diaLogTitle = "编辑机构";
       this.$nextTick(() => {
         this.$refs["formRulesRef"].clearValidate();
       });
       this.request({
-        url: "/user/getUserDetail",
+        url: "/org/getOrgInfo",
         method: "get",
         params: { id: id },
       }).then((response) => {
         let data = response.data;
         if (data.status == 1) {
           this.formData = data.data;
-          //console.log(this.userData.menus);
-          this.passwordOrg = data.data.password;
         }
       });
     },
@@ -425,7 +445,7 @@ export default {
       })
         .then(() => {
           this.request({
-            url: "/user/delUser",
+            url: "/org/deleteOrg",
             method: "post",
             data: { id: id },
           }).then((res) => {
@@ -451,17 +471,13 @@ export default {
       const that = this;
       this.$refs["formRulesRef"].validate((valid) => {
         if (valid) {
+          var areatxt = this.$refs["areas"].getCheckedNodes()[0].pathLabels;
+          that.formData.area = areatxt;
           let data = that.formData;
-          let url = "/user/addUser";
+          let url = "/org/addOrg";
           let baseid = this.formData.id;
           if (typeof baseid != "undefined") {
-            url = "/user/editUser";
-            let pwdEdit = this.formData.passwordEdit;
-            if (pwdEdit != "" && typeof pwdEdit != "undefined") {
-              this.formData.password = pwdEdit;
-            } else {
-              this.formData.password = "";
-            }
+            url = "/org/editOrg";
           }
           this.request({
             url: url,

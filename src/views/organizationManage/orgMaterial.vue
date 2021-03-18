@@ -1,6 +1,6 @@
 <template>
   <div class="app-page">
-    <div class="app-page-title">机构类型</div>
+    <div class="app-page-title">资料配置</div>
     <div class="app-page-container">
       <div class="app-page-adds">
         <el-button type="primary" @click="addOrgDialogShow">新增</el-button>
@@ -54,7 +54,9 @@
         </div>
       </div>
       <el-dialog
-        width="500px"
+        @opened="showClick"
+        @closed="hideClick"
+        width="780px"
         class="dialog-users"
         :title="this.diaLogTitle"
         :close-on-click-modal="false"
@@ -67,26 +69,49 @@
           ref="formRulesRef"
           label-width="110px"
         >
-          <el-form-item label="机构类型：" prop="name">
+          <el-form-item label="资料名称：" prop="name">
             <el-input
               v-model="formData.name"
               autocomplete="off"
               placeholder="请输入机构类型名称"
             ></el-input>
           </el-form-item>
+          <el-form-item label="资料内容：">
+            <div id="wangeditor">
+              <div ref="editorElem" id="content" style="height: 320px"></div>
+            </div>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="diaLogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addOrgEvent">确 定</el-button>
+          <el-button type="primary" @click="addMaterialEvent">确 定</el-button>
         </div>
       </el-dialog>
     </div>
   </div>
 </template>
 <script>
+import E from "wangeditor";
 export default {
   data() {
     return {
+      editorContent: "",
+      editorMenus: [
+        "head",
+        "bold",
+        "fontSize",
+        "italic",
+        "underline",
+        "strikeThrough",
+        "foreColor",
+        "backColor",
+        "link",
+        "list",
+        "todo",
+        "justify",
+        "quote",
+        "table",
+      ],
       diaLogFormVisible: false,
       diaLogTitle: "新增类型",
       formData: {},
@@ -94,14 +119,10 @@ export default {
         name: [
           {
             required: true,
-            message: "请输入分类名称",
+            message: "请输入资料名称",
             trigger: "blur",
           },
-          {
-            pattern: /^[0-9a-zA-Z\u4e00-\u9fa5]{2,10}$/,
-            message: "请输入长度2-10个字符的汉字、字母、数字组合",
-            trigger: "blur",
-          },
+          { min: 1, max: 20, message: "长度1-20个字符", trigger: "blur" },
         ],
       },
       page_current: 1,
@@ -112,8 +133,22 @@ export default {
   },
   created() {
     this.getDataList();
+    //editor.config.menus = ["bold", "head", "link", "italic", "underline"];
   },
   methods: {
+    showClick() {
+      let that = this;
+      const editor = new E(document.getElementById("content"));
+      editor.config.onchange = function (newHtml) {
+        that.editorContent = newHtml;
+      };
+      editor.config.menus = this.editorMenus;
+      editor.create();
+    },
+    hideClick() {
+      this.$refs.editorElem.innerHTML = "";
+      this.editorContent = null;
+    },
     getDataList() {
       let page = this.page_current;
       this.request({
@@ -125,7 +160,7 @@ export default {
       }).then((res) => {
         if (res.data.status == 1) {
           this.dataList = res.data.data.data;
-          this.page_current =parseInt(res.data.data.current_page);
+          this.page_current = parseInt(res.data.data.current_page);
           this.page_total = res.data.data.total;
           this.page_size = res.data.data.per_page;
         }
@@ -143,32 +178,34 @@ export default {
       });
       this.formData = {};
     },
-    addOrgEvent() {
+    addMaterialEvent() {
       const that = this;
       this.$refs["formRulesRef"].validate((valid) => {
         if (valid) {
+          that.formData.content = this.editorContent;
           let data = that.formData;
-          let url = "org/addOrgType";
+          let url = "org/addMaterial";
           let baseid = this.formData.id;
           if (typeof baseid != "undefined") {
-            url = "org/editOrgType";
+            url = "org/editMaterial";
           }
-          this.request({
-            url: url,
-            method: "post",
-            data,
-          }).then((response) => {
-            var data = response.data;
-            if (data.status == 1) {
-              this.diaLogFormVisible = false;
-              this.getDataList();
-              this.$message({
-                type: "success",
-                dangerouslyUseHTMLString: true,
-                message: "<b>保存成功！</b>",
-              });
-            }
-          });
+          console.log(data);
+          // this.request({
+          //   url: url,
+          //   method: "post",
+          //   data,
+          // }).then((response) => {
+          //   var data = response.data;
+          //   if (data.status == 1) {
+          //     this.diaLogFormVisible = false;
+          //     this.getDataList();
+          //     this.$message({
+          //       type: "success",
+          //       dangerouslyUseHTMLString: true,
+          //       message: "<b>保存成功！</b>",
+          //     });
+          //   }
+          // });
         } else {
           console.log("操作失败！");
           return false;
@@ -192,7 +229,7 @@ export default {
         }
       });
     },
-    delOrgEvent(id) {
+    delMaterialEvent(id) {
       this.$confirm("您确定要删除？删除后不能恢复！", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

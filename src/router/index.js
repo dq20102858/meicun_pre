@@ -41,17 +41,17 @@ const constantRouterMap = [
     ]
   },
 
-  // {
-  //   path: '/message',
-  //   component: Layout,
-  //   hidden: true,
-  //   children: [
-  //     {
-  //       path: '/message',
-  //       component: () => import('@/views/message/index')
-  //     },
-  //   ]
-  // },
+  {
+    path: '/organizationManage',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/organizationManage/orgMaterial',
+        component: () => import('@/views/organizationManage/orgMaterial')
+      },
+    ]
+  },
   // {
   //   path: '/users',
   //   component: Layout,
