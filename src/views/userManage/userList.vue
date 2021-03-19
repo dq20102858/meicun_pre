@@ -155,27 +155,15 @@ export default {
             trigger: "blur",
           },
           {
-            min: 6,
-            max: 14,
-            message: "请输入密码长度6到14个字符",
-            trigger: "blur",
-          },
-          {
-            pattern: /^[0-9a-zA-Z_]{1,}$/,
-            message: "密码只能是数字、字母、下划线",
+            pattern: /[0-9a-zA-Z]{6,20}$/,
+            message: "请输入长度6-20个字符的字母、数字",
             trigger: "blur",
           },
         ],
         passwordEdit: [
-          {
-            min: 6,
-            max: 14,
-            message: "请输入密码长度6到14个字符",
-            trigger: "blur",
-          },
-          {
-            pattern: /^[0-9a-zA-Z_]{1,}$/,
-            message: "密码只能是数字、字母、下划线",
+           {
+            pattern: /[0-9a-zA-Z]{6,20}$/,
+            message: "请输入长度6-20个字符的字母、数字",
             trigger: "blur",
           },
         ],
@@ -278,6 +266,7 @@ export default {
           let baseid = this.formData.id;
           if (typeof baseid != "undefined") {
             url = "/user/editAdmin";
+            
             let pwdEdit = this.formData.passwordEdit;
             if (pwdEdit != "" && typeof pwdEdit != "undefined") {
               this.formData.password = pwdEdit;

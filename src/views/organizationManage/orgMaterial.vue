@@ -12,11 +12,7 @@
               scope.$index + (page_current - 1) * page_size + 1
             }}</template>
           </el-table-column>
-          <el-table-column prop="name" label="机构名称"></el-table-column>
-          <el-table-column
-            prop="reletion_nums"
-            label="关联机构数"
-          ></el-table-column>
+          <el-table-column prop="name" label="资料名称"></el-table-column>
           <el-table-column prop="create_user" label="创建人"></el-table-column>
           <el-table-column
             prop="create_time"
@@ -115,17 +111,6 @@
 import E from "wangeditor";
 export default {
   data() {
-    // var validateConn = (rule, value, callback) => {
-    // debugger
-    //   if (value === "") {
-    //     callback(new Error("请输入"));
-    //   } else {
-    //     if (this.ruleForm.content !== "") {
-    //       this.$refs.ruleForm.validateField("content");
-    //     }
-    //     callback();
-    //   }
-    // };
     return {
       uploadAction: this.hostURL + "/upload/uploadFile",
       uploadFileList: [
@@ -167,7 +152,7 @@ export default {
             message: "请输入资料名称",
             trigger: "blur",
           },
-          { min: 1, max: 20, message: "长度1-20个字符", trigger: "blur" },
+          { min: 1, max: 30, message: "长度1-30个字符", trigger: "blur" },
         ],
         content: [
           {
@@ -225,7 +210,7 @@ export default {
       const that = this;
       this.$refs["formRulesRef"].validate((valid) => {
         if (valid) {
-          that.formData.file = this.uploadFileList;
+          that.formData.file = this.uploadFileList.toString();
           that.formData.role_id = this.$route.query.orgid;
           let data = that.formData;
           let url = "org/addMaterial";
@@ -233,25 +218,24 @@ export default {
           if (typeof baseid != "undefined") {
             url = "org/editMaterial";
           }
-          console.log(data);
-
-          // this.request({
-          //   url: url,
-          //   method: "post",
-          //   data,
-          // }).then((response) => {
-          //   var data = response.data;
-          //   if (data.status == 1) {
-          //     this.diaLogFormVisible = false;
-          //     this.getDataList();
-          //     this.$message({
-          //       type: "success",
-          //       customClass: "el-submit-message",
-          //       showClose: true,
-          //       message: "保存成功！",
-          //     });
-          //   }
-          // });
+          //console.log(data);
+          this.request({
+            url: url,
+            method: "post",
+            data,
+          }).then((response) => {
+            var data = response.data;
+            if (data.status == 1) {
+              this.diaLogFormVisible = false;
+              this.getDataList();
+              this.$message({
+                type: "success",
+                customClass: "el-submit-message",
+                showClose: true,
+                message: "保存成功！",
+              });
+            }
+          });
         } else {
           console.log("操作失败！");
           return false;
@@ -273,13 +257,14 @@ export default {
         this.$refs["formRulesRef"].clearValidate();
       });
       this.request({
-        url: "/org/editMaterial",
+        url: "/org/getMaterialInfo",
         method: "get",
         params: { id: id },
       }).then((response) => {
         let data = response.data;
         if (data.status == 1) {
           this.formData = data.data;
+          console.log(data.data);
         }
       });
     },
@@ -373,7 +358,7 @@ export default {
 .dialog-mater .avatar-uploader .el-upload:hover {
   border-color: #409eff;
 }
-.dialog-mater .avatar-uploader-icon {
+.dialog-mater .avatar-uploader .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
   width: 68px;
@@ -381,7 +366,7 @@ export default {
   line-height: 68px;
   text-align: center;
 }
-.dialog-mater .avatar {
+.dialog-mater .avatar-uploader .avatar {
   width: 68px;
   height: 68px;
   display: block;

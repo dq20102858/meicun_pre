@@ -79,5 +79,6 @@ export const asyncRouterMap = {
   '/views/organizationManage/orgList': () => import('@/views/organizationManage/orgList'),
   '/views/organizationManage/orgTypeList': () => import('@/views/organizationManage/orgTypeList'),
   '/views/userManage/userList': () => import('@/views/userManage/userList'),
+  '/views/userManage/userInfo': () => import('@/views/userManage/userInfo'),
   '/views/userManage/roleList': () => import('@/views/userManage/roleList'),
 }

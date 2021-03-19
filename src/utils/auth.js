@@ -11,16 +11,6 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
-
-export function setUserId(id) {
-  return Cookies.set(UserId, id)
-}
-export function getUserId() {
-  return Cookies.get(UserId)
-}
-export function removeUserId() {
-  return Cookies.remove(UserId)
-}
 export function setSystem(system) {
   return Cookies.set(System, system)
 }

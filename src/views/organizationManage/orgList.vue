@@ -47,7 +47,13 @@
             }}</template>
           </el-table-column>
           <el-table-column prop="name" label="机构名称"></el-table-column>
-          <el-table-column prop="area" label="区域"></el-table-column>
+          <el-table-column prop="area" label="区域">
+            <template slot-scope="scope">
+              <div>
+                {{ scope.row.province }}-{{ scope.row.city }}-{{scope.row.area}}
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column prop="org_type" label="机构类型"></el-table-column>
           <el-table-column
             prop="admin_name"
@@ -147,17 +153,19 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="所属区域" prop="area_id">
+          <el-form-item label="所属区域" prop="areas">
             <el-cascader
-              placeholder="请选择区域"
+              placeholder="请选择区域可搜索关键字"
               ref="areas"
-              v-model="formData.area_id"
-              :options="options"
+              v-model="formData.areas"
+              :options="cityList"
               filterable
+              separator="-"
+              :props="cityListProps"
               style="width: 100%"
             >
               <template slot-scope="{ node, data }">
-                <span>{{ data.label }}</span>
+                <span>{{ data.name }}</span>
                 <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
               </template>
             </el-cascader>
@@ -199,9 +207,8 @@ export default {
       diaLogTitle: "新增机构",
       uploadAction: this.hostURL + "/upload/uploadFile",
       formData: {
-        area_id: "",
+        areas: "",
       },
-      passwordOrg: "",
       formRules: {
         name: [
           {
@@ -209,7 +216,7 @@ export default {
             message: "请输入机构名称",
             trigger: "blur",
           },
-          { min: 1, max: 30, message: '长度1-30个字符', trigger: 'blur' }
+          { min: 1, max: 30, message: "长度1-30个字符", trigger: "blur" },
         ],
         type_id: [
           {
@@ -218,7 +225,7 @@ export default {
             trigger: "change",
           },
         ],
-        area_id: [
+        areas: [
           {
             type: "array",
             required: true,
@@ -257,8 +264,8 @@ export default {
             trigger: "blur",
           },
           {
-            pattern: /[0-9a-zA-Z]{1,20}$/,
-            message: "请输入长度1-20个字符的字母、数字",
+            pattern: /[0-9a-zA-Z]{6,20}$/,
+            message: "请输入长度6-20个字符的字母、数字",
             trigger: "blur",
           },
         ],
@@ -280,82 +287,17 @@ export default {
       page_total: 0,
       dataList: [],
       orgTypeList: [],
-      options: [
-        {
-          value: "1",
-          label: "北京",
-          children: [
-            {
-              value: "2",
-              label: "北京",
-              children: [
-                {
-                  value: "3",
-                  label: "昌平区",
-                },
-                {
-                  value: "4",
-                  label: "海淀区",
-                },
-                {
-                  value: "5",
-                  label: "丰台区",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          value: "10",
-          label: "江苏省",
-          children: [
-            {
-              value: "11",
-              label: "无锡",
-              children: [
-                {
-                  value: "12",
-                  label: "梁溪区",
-                },
-                {
-                  value: "13",
-                  label: "滨湖区",
-                },
-                {
-                  value: "14",
-                  label: "锡山区",
-                },
-                {
-                  value: "15",
-                  label: "惠山区",
-                },
-              ],
-            },
-            {
-              value: "20",
-              label: "南京市",
-              children: [
-                {
-                  value: "21",
-                  label: "玄武区",
-                },
-                {
-                  value: "22",
-                  label: "建邺区",
-                },
-                {
-                  value: "23",
-                  label: "秦淮区",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      cityList: [],
+      cityListProps: {
+        value: "id",
+        label: "name",
+        children: "children",
+      },
       //
     };
   },
   created() {
+    this.getCityList();
     this.getOrgTypeList();
     this.getDataList();
   },
@@ -369,6 +311,28 @@ export default {
           this.orgTypeList = res.data.data;
         }
       });
+    },
+    getCityList() {
+      this.request({
+        url: "/user/getCityTree",
+        method: "get",
+      }).then((res) => {
+        if (res.data.status == 1) {
+          let jdata = this.getTreeData(res.data.data);
+          console.log(jdata);
+          this.cityList = jdata;
+        }
+      });
+    },
+    getTreeData(data) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].children.length === 0) {
+          delete data[i].children;
+        } else {
+          this.getTreeData(data[i].children);
+        }
+      }
+      return data;
     },
     getDataList() {
       let page = this.page_current;
@@ -409,7 +373,7 @@ export default {
     addOrgDialog() {
       this.diaLogTitle = "新增机构";
       this.diaLogFormVisible = true;
-      this.$set(this.formData, "area_id", "");
+      this.$set(this.formData, "areas", "");
       this.formData = {};
     },
     materialDialog(id) {
@@ -417,7 +381,6 @@ export default {
         path: "/organizationManage/orgMaterial",
         query: { orgid: id },
       });
-     
     },
     editOrgDialog(id) {
       this.diaLogFormVisible = true;
@@ -433,6 +396,12 @@ export default {
         let data = response.data;
         if (data.status == 1) {
           this.formData = data.data;
+          let area = [];
+          area.push(data.data.province_id);
+          area.push(data.data.city_id);
+          area.push(data.data.area_id);
+          this.formData.areas = area;
+          console.log(this.formData.areas);
         }
       });
     },
@@ -459,9 +428,9 @@ export default {
                 this.getDataList();
               }
               this.$message({
-               type: "success",
-              customClass: "el-submit-message",
-              showClose: true,
+                type: "success",
+                customClass: "el-submit-message",
+                showClose: true,
                 message: "数据删除成功！",
               });
             }
@@ -473,8 +442,14 @@ export default {
       const that = this;
       this.$refs["formRulesRef"].validate((valid) => {
         if (valid) {
-          var areatxt = this.$refs["areas"].getCheckedNodes()[0].pathLabels;
-          that.formData.area = areatxt;
+          let areaid = that.formData.areas;
+          let areatxt = this.$refs["areas"].getCheckedNodes()[0].pathLabels;
+          that.formData.province_id = areaid[0];
+          that.formData.province = areatxt[0];
+          that.formData.city_id = areaid[1];
+          that.formData.city = areatxt[1];
+          that.formData.area_id = areaid[2];
+          that.formData.area = areatxt[2];
           let data = that.formData;
           let url = "/org/addOrg";
           let baseid = this.formData.id;
@@ -491,9 +466,9 @@ export default {
               this.diaLogFormVisible = false;
               this.getDataList();
               this.$message({
-                   type: "success",
-              customClass: "el-submit-message",
-              showClose: true,
+                type: "success",
+                customClass: "el-submit-message",
+                showClose: true,
                 message: "数据保存成功！",
               });
             }
