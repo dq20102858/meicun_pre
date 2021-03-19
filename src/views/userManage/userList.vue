@@ -34,7 +34,7 @@
                 <el-button
                   class="btn-del"
                   size="mini"
-                  @click="delAdminEvent(scope.row.id)"
+                  @click="delAdminDialog(scope.row.id)"
                   >删除</el-button
                 >
               </div>
@@ -298,7 +298,7 @@ export default {
       });
     },
 
-    userDeleteEvent(id) {
+    delAdminDialog(id) {
       this.$confirm("您确定要删除？删除后不能恢复！", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -307,7 +307,7 @@ export default {
       })
         .then(() => {
           this.request({
-            url: "/user/delUser",
+            url: "/user/deleteAdmin",
             method: "post",
             data: { id: id },
           }).then((res) => {

@@ -50,7 +50,9 @@
           <el-table-column prop="area" label="区域">
             <template slot-scope="scope">
               <div>
-                {{ scope.row.province }}-{{ scope.row.city }}-{{scope.row.area}}
+                {{ scope.row.province }}-{{ scope.row.city }}-{{
+                  scope.row.area
+                }}
               </div>
             </template>
           </el-table-column>
@@ -81,7 +83,7 @@
                 <el-button
                   class="btn-into"
                   size="mini"
-                  @click="editOrgDialog(scope.row.id)"
+                  onclick="alert('系统还未开发')"
                   >进入系统</el-button
                 >
                 <el-button
