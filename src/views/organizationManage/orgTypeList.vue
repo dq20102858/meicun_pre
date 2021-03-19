@@ -163,9 +163,10 @@ export default {
               this.diaLogFormVisible = false;
               this.getDataList();
               this.$message({
-                type: "success",
-                dangerouslyUseHTMLString: true,
-                message: "<b>保存成功！</b>",
+                  type: "success",
+              customClass: "el-submit-message",
+              showClose: true,
+                message: "数据保存成功！",
               });
             }
           });
@@ -215,9 +216,10 @@ export default {
                 this.getDataList();
               }
               this.$message({
-                type: "success",
-                dangerouslyUseHTMLString: true,
-                message: "<b>删除成功！</b>",
+                   type: "success",
+              customClass: "el-submit-message",
+              showClose: true,
+                message: "数据删除成功！",
               });
             }
           });

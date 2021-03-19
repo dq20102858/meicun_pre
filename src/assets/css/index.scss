@@ -138,6 +138,8 @@ ul,li{list-style-type: none}
 .el-message-box-new  .el-message-box__content{padding:30px 20px;}
 .el-message-box-new  .el-message-box__btns{ text-align: right; border-top: 1px #e8ecf6 solid; padding-top: 15px; margin-bottom: 5px;}
 .el-message-box-new  .el-message-box__btns  .el-button{padding: 9px 20px;font-size: 14px;border-radius: 4px;}
+.el-submit-message .el-message__content{font-weight: 700;font-size: 16px;}
+.el-submit-message  .el-message__icon{font-size: 20px;}
 /* layer */
 .vl-notify-mask { background-color: #000;opacity: .5;}
 .vl-notify .vl-notice-title{height: 49px!important;line-height:50px!important;border-radius:6px 6px 0 0; background: #0B64B4!important;text-align: center;}

@@ -129,6 +129,7 @@
 export default {
   data() {
     return {
+          uploadAction: this.hostURL + "/upload/uploadFile",
       diaLogFormVisible: false,
       diaLogTitle: "添加人员信息",
       formData: {},

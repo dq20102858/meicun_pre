@@ -127,7 +127,7 @@ export default {
         name: [
           {
             required: true,
-            message: "",
+            message: "请输入姓名",
             trigger: "blur",
           },
           {
@@ -139,6 +139,7 @@ export default {
         username: [
           {
             required: true,
+            message:"请输入账号，默认可输入姓名的全拼字母",
             trigger: "blur",
           },
           {
@@ -293,9 +294,11 @@ export default {
             if (data.status == 1) {
               this.diaLogFormVisible = false;
               this.getDataList();
-              this.$message({
+             this.$message({
                 type: "success",
-                message: "保存成功！",
+                customClass: "el-submit-message",
+                showClose: true,
+                message: "数据保存成功！",
               });
             }
           });
@@ -330,7 +333,9 @@ export default {
               }
               this.$message({
                 type: "success",
-                message: "删除成功！",
+                customClass: "el-submit-message",
+                showClose: true,
+                message: "数据删除成功！",
               });
             }
           });

@@ -459,8 +459,10 @@ export default {
                 this.getDataList();
               }
               this.$message({
-                type: "success",
-                message: "删除成功！",
+               type: "success",
+              customClass: "el-submit-message",
+              showClose: true,
+                message: "数据删除成功！",
               });
             }
           });
@@ -489,8 +491,10 @@ export default {
               this.diaLogFormVisible = false;
               this.getDataList();
               this.$message({
-                type: "success",
-                message: "保存成功！",
+                   type: "success",
+              customClass: "el-submit-message",
+              showClose: true,
+                message: "数据保存成功！",
               });
             }
           });

@@ -120,7 +120,7 @@ export default {
         menus: [
           {
             required: true,
-            message: "请输入角色名称",
+            message: "请选择角色权限配置",
             trigger: "change",
           },
         ],
@@ -209,6 +209,8 @@ export default {
           if (that.formData.menus.length == 0) {
             this.$message({
               type: "success",
+              customClass: "el-submit-message",
+              showClose: true,
               message: "请选择权限配置",
             });
             return;
@@ -229,7 +231,9 @@ export default {
               this.getDataList();
               this.$message({
                 type: "success",
-                message: "保存成功！",
+                customClass: "el-submit-message",
+                showClose: true,
+                message: "数据保存成功！",
               });
             }
           });
@@ -264,80 +268,16 @@ export default {
               }
               this.$message({
                 type: "success",
-                message: "删除成功！",
+                customClass: "el-submit-message",
+                showClose: true,
+                message: "数据删除成功！",
               });
             }
           });
         })
         .catch(() => {});
     },
-    //上传图片
-    uploadExceed() {
-      this.$message({
-        type: "warning",
-        message: `最多可以上传1张图片`,
-      });
-    },
-    uploadSuccess(res, file) {
-      console.log("图上传成功", res);
-      this.$set(this.formData, "avatar", res.data.url);
-    },
-    uploadBefore(file) {
-      var filename = file.name.substring(file.name.lastIndexOf(".") + 1);
-      const extension =
-        filename === "GIF" ||
-        filename === "gif" ||
-        filename === "jpeg" ||
-        filename === "jpg" ||
-        filename === "JPG" ||
-        filename === "png" ||
-        filename === "PNG";
-      const isLtM = file.size / 1024 / 1024 < 2;
-      if (!extension) {
-        this.$message({
-          message: "上传图片只能是 jpg  png  gif 格式",
-          type: "error",
-        });
-        return false;
-      }
-      if (!isLtM) {
-        this.$message({
-          message: "上传图片大小不能超过 2MB",
-          type: "error",
-        });
-        return false;
-      }
-      return extension || isLtM;
-    },
     //
   },
 };
 </script>
-<style>
-.dialog-users .el-select {
-  width: 100%;
-}
-.dialog-users .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.dialog-users .avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.dialog-users .avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.dialog-users .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-}
-</style>
